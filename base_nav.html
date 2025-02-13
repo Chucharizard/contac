@@ -1,0 +1,176 @@
+<style>
+    .navbar {
+        background: linear-gradient(45deg, #2c3e50, #3498db) !important;
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+        font-size: 1.5em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        transform: translateY(-2px);
+    }
+
+    .navbar-brand i {
+        font-size: 1.2em;
+    }
+
+    .nav-item {
+        position: relative;
+        margin: 0 5px;
+    }
+
+    .nav-link {
+        padding: 8px 20px !important;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        color: rgba(255,255,255,0.8) !important;
+    }
+
+    .nav-link:hover {
+        color: white !important;
+        background: rgba(255,255,255,0.1);
+        transform: translateY(-2px);
+    }
+
+    .nav-link.active {
+        background: rgba(255,255,255,0.2);
+        color: white !important;
+        font-weight: 500;
+    }
+
+    .nav-link i {
+        margin-right: 8px;
+        font-size: 1.1em;
+    }
+
+    @media (max-width: 991px) {
+        .navbar-nav {
+            background: rgba(0,0,0,0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-top: 1rem;
+        }
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(45deg, #2c3e50, #3498db);">
+    <a class="navbar-brand" href="{{ url_for('tiendita') }}">
+        <i class="fas fa-store"></i> Mi Tienda
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('index') }}">
+                    <i class="fas fa-home"></i> Inicio
+                </a>
+            </li>
+            {% if current_user.puede_ver_inventario %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('inventario') }}">
+                    <i class="fas fa-boxes"></i> Inventario
+                </a>
+            </li>
+            {% endif %}
+            {% if current_user.puede_hacer_ventas %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('ver_carrito') }}">
+                    <i class="fas fa-shopping-cart"></i> Carrito
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('historial_ventas') }}">
+                    <i class="fas fa-history"></i> Historial de Ventas
+                </a>
+            </li>
+            {% if current_user.puede_ver_dashboard %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            {% endif %}
+            {% if current_user.puede_ver_reportes %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('reportes') }}">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a>
+            </li>
+            {% endif %}
+            <!-- Agregar después de los otros links del menú -->
+            {% if current_user.role in ['admin', 'superadmin'] %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('ver_historial') }}">
+                    <i class="fas fa-history"></i> Historial
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('historial_turnos') }}">
+                    <i class="fas fa-clock"></i> Historial de Turnos
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <ul class="navbar-nav">
+            {% if session['user_id'] %}
+                <li class="nav-item">
+                    {% if not session.get('turno_activo') %}
+                        <form action="{{ url_for('iniciar_turno') }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-success nav-link">
+                                <i class="fas fa-play"></i> Iniciar Turno
+                            </button>
+                        </form>
+                    {% else %}
+                        <form action="{{ url_for('finalizar_turno') }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger nav-link">
+                                <i class="fas fa-stop"></i> Finalizar Turno
+                            </button>
+                        </form>
+                    {% endif %}
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                       data-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i> {{ session['username'] }}
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        {% if session['role'] in ['admin', 'superadmin'] %}
+                        <a class="dropdown-item" href="{{ url_for('gestionar_usuarios') }}">
+                            <i class="fas fa-users-cog"></i> Gestionar Usuarios
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        {% endif %}
+                        <a class="dropdown-item" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </li>
+                {% if current_user.role in ['admin', 'superadmin'] %}
+                <li class="nav-item">
+                    <a href="{{ url_for('crear_respaldo') }}" class="nav-item nav-link" title="Crear respaldo">
+                        <i class="fas fa-database"></i> Respaldo
+                    </a>
+                </li>
+                {% endif %}
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">
+                        <i class="fas fa-sign-in-alt"></i> Ingresar
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
