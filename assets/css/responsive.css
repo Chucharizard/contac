@@ -6,9 +6,8 @@
    MOBILE FIRST APPROACH
    ========================================= */
 
-/* Extra Small devices (phones, 576px and down) */
-@media (max-width: 575.98px) {
-  /* Navegación móvil */
+/* Mobile Navigation - Para todos los dispositivos móviles hasta 768px */
+@media (max-width: 767.98px) {
   .nav-menu {
     position: fixed;
     top: 70px;
@@ -17,6 +16,7 @@
     height: calc(100vh - 70px);
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
+    display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
@@ -41,6 +41,18 @@
     border-radius: var(--radius-lg);
     margin-bottom: var(--spacing-sm);
   }
+
+  .nav-link:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  [data-theme="dark"] .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Extra Small devices (phones, 576px and down) */
+@media (max-width: 575.98px) {
 
   /* Hero section móvil */
   .hero {

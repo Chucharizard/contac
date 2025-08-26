@@ -55,7 +55,8 @@ class Portfolio {
 
     // Toggle móvil
     if (navToggle && navMenu) {
-      navToggle.addEventListener('click', () => {
+      navToggle.addEventListener('click', (e) => {
+        e.preventDefault();
         navToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
         document.body.classList.toggle('nav-open');
